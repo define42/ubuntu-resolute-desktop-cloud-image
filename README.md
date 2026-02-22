@@ -1,20 +1,20 @@
 # ubuntu-desktop-cloud-image
 
-Builds an Ubuntu Noble (24.04) desktop cloud image from the official server
+Builds an Ubuntu Resolute (26.04) desktop cloud image from the official server
 cloud image using GitHub Actions.
 
 ## What it does
-- Downloads `noble-server-cloudimg-amd64.img`
+- Downloads `resolute-server-cloudimg-amd64.img`
 - Expands the disk to 8G
 - Installs desktop and tools (`ubuntu-desktop`, `xrdp`, `vim`,
   `net-tools`, `nmap`, `snapd`)
 - Installs GRUB and updates the boot config
-- Compresses the result to `noble-desktop-cloudimg-amd64.img`
+- Compresses the result to `resolute-desktop-cloudimg-amd64.img`
 - Tags and publishes a GitHub Release on pushes to `main`
 
 ## Output
 The workflow publishes a release artifact named
-`noble-desktop-cloudimg-amd64.img`.
+`resolute-desktop-cloudimg-amd64.img`.
 
 ## Compatibility
 The image can be used with QEMU and VirtualBox.
@@ -54,10 +54,10 @@ QEMU example:
 ```sh
 qemu-system-x86_64 \
   -m 4096 -smp 2 \
-  -drive file=noble-desktop-cloudimg-amd64.img,format=qcow2,if=virtio \
+  -drive file=resolute-desktop-cloudimg-amd64.img,format=qcow2,if=virtio \
   -drive file=seed.iso,format=raw,media=cdrom
 ```
 
 VirtualBox:
-Attach `noble-desktop-cloudimg-amd64.img` as the primary disk and
+Attach `resolute-desktop-cloudimg-amd64.img` as the primary disk and
 `seed.iso` as an optical drive, then boot the VM.
