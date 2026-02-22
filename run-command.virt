@@ -1,0 +1,88 @@
+install xfce4,xfce4-goodies,xfce4-terminal,lightdm,lightdm-gtk-greeter,xauth,xserver-xorg-input-libinput,xserver-xorg-legacy,xrdp,xorgxrdp,dbus-x11,grub-pc-bin,vim,net-tools,nmap,snapd,wget,gnupg
+
+run-command ln -sf /dev/null /etc/systemd/system/systemd-networkd-wait-online.service
+
+
+run-command grub-install --target=i386-pc /dev/sda
+run-command update-grub
+run-command apt-get clean && rm -rf /var/lib/apt/lists/*
+
+
+# Default XFCE session for new users
+upload .xsession:/etc/skel/.xsession
+run-command chmod 0755 /etc/skel/.xsession
+
+# LightDM config for XFCE
+upload 50-xfce.conf:/etc/lightdm/lightdm.conf.d/50-xfce.conf
+run-command chmod 0644 /etc/lightdm/lightdm.conf.d/50-xfce.conf
+
+# Make LightDM the default display manager
+upload default-display-manager:/etc/X11/default-display-manager
+run-command chmod 0644 /etc/X11/default-display-manager
+
+# Allow XRDP to launch Xorg for non-console users
+upload Xwrapper.config:/etc/X11/Xwrapper.config
+run-command chmod 0644 /etc/X11/Xwrapper.config
+
+# Force XRDP sessions to start XFCE
+upload startwm.sh:/etc/xrdp/startwm.sh
+run-command chmod 0755 /etc/xrdp/startwm.sh
+
+# Disable XFCE compositor for XRDP performance
+upload xfwm4.xml:/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml
+run-command chmod 0644 /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml
+
+# Disable AppArmor at kernel level
+upload 99-disable-apparmor.cfg:/etc/default/grub.d/99-disable-apparmor.cfg
+run-command chmod 0644 /etc/default/grub.d/99-disable-apparmor.cfg
+
+# Add Mozilla APT repository and pin it above Ubuntu archive
+run-command install -d -m 0755 /etc/apt/keyrings
+run-command wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O /etc/apt/keyrings/packages.mozilla.org.asc
+run-command printf 'deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main\n' > /etc/apt/sources.list.d/mozilla.list
+run-command printf 'Package: *\nPin: origin packages.mozilla.org\nPin-Priority: 1000\n' > /etc/apt/preferences.d/mozilla
+run-command apt-get update
+install firefox
+
+# Add VS Code repository and install code
+run-command wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /etc/apt/keyrings/packages.microsoft.gpg
+run-command printf 'deb [arch=amd64 signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main\n' > /etc/apt/sources.list.d/vscode.list
+run-command apt-get update
+install code
+
+# Add Google Chrome repository and install chrome
+run-command wget -qO- https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /etc/apt/keyrings/google-chrome.gpg
+run-command printf 'deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] https://dl.google.com/linux/chrome/deb/ stable main\n' > /etc/apt/sources.list.d/google-chrome.list
+run-command apt-get update
+install google-chrome-stable
+
+# Reduce Firefox CPU usage under XRDP
+run-command mkdir -p /etc/firefox/policies/
+upload policies.json:/etc/firefox/policies/policies.json
+run-command chmod 0644 /etc/firefox/policies/policies.json
+
+# Setup xrdp
+upload xrdp.ini:/etc/xrdp/xrdp.ini
+run-command chmod 0644 /etc/xrdp/xrdp.ini
+
+# Enable XRDP
+run-command usermod -aG ssl-cert xrdp
+run-command systemctl enable xrdp
+
+# Prefer LightDM/XFCE for local UI
+run-command systemctl set-default graphical.target
+
+# Disable AppArmor service immediately (kernel param applies after reboot)
+run-command systemctl disable apparmor
+
+# Update GRUB and reboot to apply kernel params
+run-command update-grub
+
+# Truncate machine-id
+run-command truncate -s 0 /etc/machine-id
+run-command truncate -s 0 /var/lib/dbus/machine-id
+
+# Enable network-manager
+#run-command systemctl enable systemd-networkd
+#run-command systemctl enable systemd-resolved
+#run-command ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
