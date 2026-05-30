@@ -32,8 +32,10 @@ jobs:
           sudo apt update -y
           sudo apt install wget e2fsprogs curl libguestfs-tools -y
 
-      - name: Fix kernel permissions for libguestfs
-        run: sudo chmod 0644 /boot/vmlinuz-*
+      - name: Install kernel for libguestfs
+        run: |
+          sudo apt install -y linux-image-generic
+          sudo chmod 0644 /boot/vmlinuz-*
 
       - name: WGET
         run: wget https://cloud-images.ubuntu.com/resolute/current/resolute-server-cloudimg-amd64.img
