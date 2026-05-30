@@ -1,4 +1,6 @@
-# Give the appliance a working resolver before any apt/wget runs
+# Give the appliance a working resolver before any apt/wget runs.
+# /etc/resolv.conf ships as a dangling symlink, so remove it before writing a real file.
+delete /etc/resolv.conf
 write /etc/resolv.conf:nameserver 8.8.8.8
 
 install xfce4,xfce4-goodies,xfce4-terminal,lightdm,lightdm-gtk-greeter,xauth,xserver-xorg-input-libinput,xserver-xorg-legacy,xrdp,xorgxrdp,dbus-x11,grub-pc-bin,vim,net-tools,nmap,snapd,wget,gnupg
