@@ -61,3 +61,4 @@ qemu-system-x86_64 \
 VirtualBox:
 Attach `resolute-desktop-cloudimg-amd64.img` as the primary disk and
 `seed.iso` as an optical drive, then boot the VM.
+
