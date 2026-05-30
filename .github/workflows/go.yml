@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04 ## Only works on ubuntu 22.04 (newer images lack QEMU built-in SLIRP, so virt-customize --network has no DNS/egress)
+    runs-on: ubuntu-24.04 ## Needs e2fsprogs >= 1.47 for the resolute rootfs 'orphan_file' feature (22.04's 1.46.5 fails virt-resize with "FEATURE_C12"). Use the full 24.04 runner, NOT "ubuntu-slim": the minimal runner's QEMU user-net has no DNS, breaking virt-customize --network.
 
     permissions:
       contents: write   # required for tags + GitHub releases
