@@ -1,3 +1,6 @@
+# Give the appliance a working resolver before any apt/wget runs
+write /etc/resolv.conf:nameserver 8.8.8.8
+
 install xfce4,xfce4-goodies,xfce4-terminal,lightdm,lightdm-gtk-greeter,xauth,xserver-xorg-input-libinput,xserver-xorg-legacy,xrdp,xorgxrdp,dbus-x11,grub-pc-bin,vim,net-tools,nmap,snapd,wget,gnupg
 
 run-command ln -sf /dev/null /etc/systemd/system/systemd-networkd-wait-online.service
