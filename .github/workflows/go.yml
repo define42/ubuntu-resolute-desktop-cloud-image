@@ -37,9 +37,8 @@ jobs:
 
       - name:  Resize
         run: |
-          export LIBGUESTFS_DEBUG=1 LIBGUESTFS_TRACE=1
           qemu-img create -f qcow2 resolute-expanded.img 8G
-          sudo virt-resize --expand /dev/sda1 resolute-server-cloudimg-amd64.img resolute-expanded.img
+          sudo LIBGUESTFS_DEBUG=1 LIBGUESTFS_TRACE=1 virt-resize --expand /dev/sda1 resolute-server-cloudimg-amd64.img resolute-expanded.img
 
       - name:  Extend cloud image
         run: |
