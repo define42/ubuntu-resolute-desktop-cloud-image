@@ -47,7 +47,7 @@ jobs:
 
       - name:  Extend cloud image
         run: |
-          sudo virt-customize -a resolute-expanded.img --commands-from-file 'run-command.virt'
+          sudo virt-customize --network -a resolute-expanded.img --commands-from-file 'run-command.virt'
           ls -la
 
       - name:  Compress cloud image

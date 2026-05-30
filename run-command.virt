@@ -1,7 +1,8 @@
-# Give the appliance a working resolver before any apt/wget runs.
-# /etc/resolv.conf ships as a dangling symlink, so remove it before writing a real file.
+# Give libguestfs/QEMU user networking a working resolver before any apt/wget runs.
+# /etc/resolv.conf ships as a dangling symlink in the offline image, so replace it
+# temporarily with QEMU's user-mode DNS server.
 delete /etc/resolv.conf
-write /etc/resolv.conf:nameserver 8.8.8.8
+write /etc/resolv.conf:nameserver 10.0.2.3
 
 install xfce4,xfce4-goodies,xfce4-terminal,lightdm,lightdm-gtk-greeter,xauth,xserver-xorg-input-libinput,xserver-xorg-legacy,xrdp,xorgxrdp,dbus-x11,grub-pc-bin,vim,net-tools,nmap,snapd,wget,gnupg
 
@@ -87,7 +88,6 @@ run-command update-grub
 run-command truncate -s 0 /etc/machine-id
 run-command truncate -s 0 /var/lib/dbus/machine-id
 
-# Enable network-manager
-#run-command systemctl enable systemd-networkd
-#run-command systemctl enable systemd-resolved
-#run-command ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+# Restore normal runtime DNS handling for the booted cloud image.
+run-command systemctl enable systemd-resolved
+run-command ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
