@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-slim ## Only works on ubuntu 22.04 
+    runs-on: ubuntu-22.04 ## Only works on ubuntu 22.04 (newer images lack QEMU built-in SLIRP, so virt-customize --network has no DNS/egress)
 
     permissions:
       contents: write   # required for tags + GitHub releases
