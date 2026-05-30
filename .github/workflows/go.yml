@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-24.04 ## Needs e2fsprogs >= 1.47 for the resolute rootfs 'orphan_file' feature (22.04's 1.46.5 fails virt-resize with "FEATURE_C12"). Use the full 24.04 runner, NOT "ubuntu-slim": the minimal runner's QEMU user-net has no DNS, breaking virt-customize --network.
+    runs-on: ubuntu-22.04 ## Only works on ubuntu 22.04 
 
     permissions:
       contents: write   # required for tags + GitHub releases
@@ -32,22 +32,9 @@ jobs:
           sudo apt update -y
           sudo apt install wget e2fsprogs curl libguestfs-tools -y
 
-      - name: Install kernel for libguestfs
-        run: |
-          sudo apt install -y linux-image-generic
-          sudo chmod 0644 /boot/vmlinuz-*
-
-      - name: WGET
-        run: wget https://cloud-images.ubuntu.com/resolute/current/resolute-server-cloudimg-amd64.img
-
-      - name:  Resize
-        run: |
-          qemu-img create -f qcow2 resolute-expanded.img 8G
-          sudo LIBGUESTFS_DEBUG=1 LIBGUESTFS_TRACE=1 virt-resize --expand /dev/sda1 resolute-server-cloudimg-amd64.img resolute-expanded.img
-
       - name:  Extend cloud image
         run: |
-          sudo virt-customize --network -a resolute-expanded.img --commands-from-file 'run-command.virt'
+          sudo virt-customize -a resolute-expanded.img --commands-from-file 'run-command.virt'
           ls -la
 
       - name:  Compress cloud image

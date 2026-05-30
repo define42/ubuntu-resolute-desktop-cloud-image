@@ -1,13 +1,3 @@
-# Give libguestfs/QEMU user networking a working resolver before any apt/wget runs.
-# /etc/resolv.conf ships as a dangling symlink in the offline image, so delete it
-# before writing a real file. Point at a public resolver -- do NOT use QEMU's
-# built-in DNS (10.0.2.3): SLIRP forwards 10.0.2.3 queries to the *host's*
-# /etc/resolv.conf, and GitHub runners point that at the systemd-resolved stub
-# 127.0.0.53, which SLIRP cannot reach -> every lookup fails with "Temporary
-# failure resolving". Querying 8.8.8.8 directly routes out via SLIRP's NAT.
-delete /etc/resolv.conf
-write /etc/resolv.conf:nameserver 8.8.8.8
-
 install xfce4,xfce4-goodies,xfce4-terminal,lightdm,lightdm-gtk-greeter,xauth,xserver-xorg-input-libinput,xserver-xorg-legacy,xrdp,xorgxrdp,dbus-x11,grub-pc-bin,vim,net-tools,nmap,snapd,wget,gnupg
 
 run-command ln -sf /dev/null /etc/systemd/system/systemd-networkd-wait-online.service
@@ -92,6 +82,7 @@ run-command update-grub
 run-command truncate -s 0 /etc/machine-id
 run-command truncate -s 0 /var/lib/dbus/machine-id
 
-# Restore normal runtime DNS handling for the booted cloud image.
-run-command systemctl enable systemd-resolved
-run-command ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+# Enable network-manager
+#run-command systemctl enable systemd-networkd
+#run-command systemctl enable systemd-resolved
+#run-command ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
