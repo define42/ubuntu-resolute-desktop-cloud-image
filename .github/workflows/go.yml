@@ -34,12 +34,13 @@ jobs:
 
       - name:  Extend cloud image
         run: |
-          sudo virt-customize -a resolute-expanded.img --commands-from-file 'run-command.virt'
+          wget https://cloud-images.ubuntu.com/resolute/current/resolute-server-cloudimg-amd64.img
+          sudo virt-customize -a resolute-server-cloudimg-amd64.img --commands-from-file 'run-command.virt'
           ls -la
 
       - name:  Compress cloud image
         run: |
-          sudo virt-sparsify --compress resolute-expanded.img resolute-desktop-cloudimg-amd64.img
+          sudo virt-sparsify --compress resolute-server-cloudimg-amd64.img resolute-desktop-cloudimg-amd64.img
           ls -la
 
       # -------------------------------
