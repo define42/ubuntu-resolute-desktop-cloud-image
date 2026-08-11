@@ -6,8 +6,8 @@ cloud image using GitHub Actions.
 ## What it does
 - Downloads `resolute-server-cloudimg-amd64.img`
 - Expands the disk to 8G
-- Installs desktop and tools (`ubuntu-desktop`, `xrdp`, `vim`,
-  `net-tools`, `nmap`, `snapd`)
+- Installs XFCE and tools (`xrdp`, `vim`, `net-tools`, `nmap`, `snapd`)
+- Installs Docker Engine with Buildx and Docker Compose
 - Installs GRUB and updates the boot config
 - Compresses the result to `resolute-desktop-cloudimg-amd64.img`
 - Tags and publishes a GitHub Release on pushes to `main`
@@ -23,6 +23,11 @@ The image can be used with QEMU and VirtualBox.
 Cloud-init is used to configure the VM on first boot (users, SSH keys,
 packages, hostname, and networking). This image expects a NoCloud seed
 attached as a disk or CD-ROM.
+
+## Docker access
+Docker is enabled at boot and its Unix socket is available to every local user
+without `sudo`. Docker daemon access grants root-equivalent privileges, so this
+image should only be used where every user is trusted.
 
 ## How to use cloud-init
 1. Create `user-data` and `meta-data` files.
@@ -61,4 +66,3 @@ qemu-system-x86_64 \
 VirtualBox:
 Attach `resolute-desktop-cloudimg-amd64.img` as the primary disk and
 `seed.iso` as an optical drive, then boot the VM.
-
