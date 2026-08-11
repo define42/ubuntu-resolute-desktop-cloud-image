@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04 ## Only works on ubuntu 22.04 
+    runs-on: ubuntu-26.04
 
     permissions:
       contents: write   # required for tags + GitHub releases
@@ -24,22 +24,45 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0   # REQUIRED for tag calculation
-          lfs: true
 
       - name: Install packages
         run: |
           ls -la
           sudo apt update -y
-          sudo apt install wget e2fsprogs curl libguestfs-tools -y
+          sudo apt install wget -y
 
-      - name:  Extend cloud image
+      - name: Download Ubuntu Resolute
         run: |
-          sudo virt-customize -a resolute-expanded.img --commands-from-file 'run-command.virt'
-          ls -la
+          wget https://cloud-images.ubuntu.com/resolute/current/resolute-server-cloudimg-amd64.img
 
-      - name:  Compress cloud image
+      - name: Build cloud image with prebuilt virt tools
         run: |
-          sudo virt-sparsify --compress resolute-expanded.img resolute-desktop-cloudimg-amd64.img
+          docker_args=(
+            --rm
+            --pull=always
+            --volume "$GITHUB_WORKSPACE:/workspace"
+            --workdir /workspace
+          )
+
+          if [[ -e /dev/kvm ]]; then
+            docker_args+=(--device /dev/kvm)
+          fi
+          docker run "${docker_args[@]}" \
+            ghcr.io/define42/virt-tools-container:latest \
+            bash -euxo pipefail -c '
+              rpm -q libguestfs guestfs-tools
+              qemu-img create -f qcow2 resolute-build.img 8G
+              virt-resize --expand /dev/sda1 \
+                resolute-server-cloudimg-amd64.img \
+                resolute-build.img
+              virt-customize \
+                -a resolute-build.img \
+                --commands-from-file run-command.virt
+              virt-sparsify --in-place resolute-build.img
+              qemu-img convert -c -O qcow2 \
+                resolute-build.img \
+                resolute-desktop-cloudimg-amd64.img
+            '
           ls -la
 
       # -------------------------------
