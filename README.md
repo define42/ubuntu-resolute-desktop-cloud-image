@@ -13,8 +13,15 @@ cloud image using GitHub Actions.
 - Tags and publishes a GitHub Release on pushes to `main`
 
 ## Output
-The workflow publishes a release artifact named
-`resolute-desktop-cloudimg-amd64.img`.
+The workflow splits the versioned image into release assets smaller than
+GitHub's 2 GiB per-file limit. Download every `.img.part-*` file and the
+`.img.sha256` file from the release, then reconstruct and verify the image:
+
+```sh
+image="resolute-desktop-cloudimg-amd64-vX.Y.Z.img"
+cat "$image".part-* > "$image"
+sha256sum --check "$image.sha256"
+```
 
 ## Compatibility
 The image can be used with QEMU and VirtualBox.
