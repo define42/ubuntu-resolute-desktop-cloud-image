@@ -9,7 +9,7 @@ cloud image using GitHub Actions.
 - Installs XFCE and tools (`xrdp`, `vim`, `net-tools`, `nmap`, `snapd`)
 - Installs Docker Engine with Buildx and Docker Compose
 - Installs GRUB and updates the boot config
-- Compresses the result to `resolute-desktop-cloudimg-amd64.img`
+- Compresses the result to `resolute-desktop-xfce-cloudimg-amd64.img`
 - Tags and publishes a GitHub Release on pushes to `main`
 
 ## Output
@@ -18,7 +18,7 @@ GitHub's 2 GiB per-file limit. Download every `.img.part-*` file and the
 `.img.sha256` file from the release, then reconstruct and verify the image:
 
 ```sh
-image="resolute-desktop-cloudimg-amd64-vX.Y.Z.img"
+image="resolute-desktop-xfce-cloudimg-amd64-vX.Y.Z.img"
 cat "$image".part-* > "$image"
 sha256sum --check "$image.sha256"
 ```
@@ -66,10 +66,10 @@ QEMU example:
 ```sh
 qemu-system-x86_64 \
   -m 4096 -smp 2 \
-  -drive file=resolute-desktop-cloudimg-amd64.img,format=qcow2,if=virtio \
+  -drive file=resolute-desktop-xfce-cloudimg-amd64.img,format=qcow2,if=virtio \
   -drive file=seed.iso,format=raw,media=cdrom
 ```
 
 VirtualBox:
-Attach `resolute-desktop-cloudimg-amd64.img` as the primary disk and
+Attach `resolute-desktop-xfce-cloudimg-amd64.img` as the primary disk and
 `seed.iso` as an optical drive, then boot the VM.
