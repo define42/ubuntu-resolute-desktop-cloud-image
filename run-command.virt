@@ -1,5 +1,5 @@
 run-command apt-get full-upgrade -y
-install xfce4,xfce4-goodies,xfce4-terminal,lightdm,lightdm-gtk-greeter,xauth,xserver-xorg-input-libinput,xserver-xorg-legacy,xrdp,xorgxrdp,dbus-x11,grub-pc-bin,vim,net-tools,nmap,snapd,wget,gnupg
+install ubuntu-desktop-minimal,gnome-terminal,gdm3,gnome-remote-desktop,dbus-x11,openssl,grub-pc-bin,vim,net-tools,nmap,snapd,wget,gnupg
 
 run-command ln -sf /dev/null /etc/systemd/system/systemd-networkd-wait-online.service
 
@@ -9,29 +9,9 @@ run-command update-grub
 run-command apt-get clean && rm -rf /var/lib/apt/lists/*
 
 
-# Default XFCE session for new users
-upload .xsession:/etc/skel/.xsession
-run-command chmod 0755 /etc/skel/.xsession
-
-# LightDM config for XFCE
-upload 50-xfce.conf:/etc/lightdm/lightdm.conf.d/50-xfce.conf
-run-command chmod 0644 /etc/lightdm/lightdm.conf.d/50-xfce.conf
-
-# Make LightDM the default display manager
+# Make GDM the default display manager
 upload default-display-manager:/etc/X11/default-display-manager
 run-command chmod 0644 /etc/X11/default-display-manager
-
-# Allow XRDP to launch Xorg for non-console users
-upload Xwrapper.config:/etc/X11/Xwrapper.config
-run-command chmod 0644 /etc/X11/Xwrapper.config
-
-# Force XRDP sessions to start XFCE
-upload startwm.sh:/etc/xrdp/startwm.sh
-run-command chmod 0755 /etc/xrdp/startwm.sh
-
-# Disable XFCE compositor for XRDP performance
-upload xfwm4.xml:/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml
-run-command chmod 0644 /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml
 
 # Disable AppArmor at kernel level
 upload 99-disable-apparmor.cfg:/etc/default/grub.d/99-disable-apparmor.cfg
@@ -75,20 +55,20 @@ run-command systemctl enable docker.service docker.socket containerd.service
 
 run-command apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Reduce Firefox CPU usage under XRDP
+# Reduce Firefox CPU usage over remote desktop
 run-command mkdir -p /etc/firefox/policies/
 upload policies.json:/etc/firefox/policies/policies.json
 run-command chmod 0644 /etc/firefox/policies/policies.json
 
-# Setup xrdp
-upload xrdp.ini:/etc/xrdp/xrdp.ini
-run-command chmod 0644 /etc/xrdp/xrdp.ini
+# Configure GNOME Remote Desktop (GRD) for headless RDP on first boot
+upload gnome-remote-desktop-setup.sh:/usr/local/sbin/gnome-remote-desktop-setup
+run-command chmod 0755 /usr/local/sbin/gnome-remote-desktop-setup
+upload gnome-remote-desktop-setup.service:/etc/systemd/system/gnome-remote-desktop-setup.service
+run-command chmod 0644 /etc/systemd/system/gnome-remote-desktop-setup.service
+run-command systemctl enable gnome-remote-desktop-setup.service
+run-command systemctl enable gnome-remote-desktop.service || true
 
-# Enable XRDP
-run-command usermod -aG ssl-cert xrdp
-run-command systemctl enable xrdp
-
-# Prefer LightDM/XFCE for local UI
+# Prefer GDM/GNOME for local UI
 run-command systemctl set-default graphical.target
 
 # Disable AppArmor service immediately (kernel param applies after reboot)

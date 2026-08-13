@@ -6,10 +6,11 @@ cloud image using GitHub Actions.
 ## What it does
 - Downloads `resolute-server-cloudimg-amd64.img`
 - Expands the disk to 8G
-- Installs XFCE and tools (`xrdp`, `vim`, `net-tools`, `nmap`, `snapd`)
+- Installs the GNOME desktop with GDM and tools (`gnome-remote-desktop`,
+  `vim`, `net-tools`, `nmap`, `snapd`)
 - Installs Docker Engine with Buildx and Docker Compose
 - Installs GRUB and updates the boot config
-- Compresses the result to `resolute-desktop-xfce-cloudimg-amd64.img`
+- Compresses the result to `resolute-desktop-gnome-cloudimg-amd64.img`
 - Tags and publishes a GitHub Release on pushes to `main`
 
 ## Output
@@ -18,10 +19,18 @@ GitHub's 2 GiB per-file limit. Download every `.img.part-*` file and the
 `.img.sha256` file from the release, then reconstruct and verify the image:
 
 ```sh
-image="resolute-desktop-xfce-cloudimg-amd64-vX.Y.Z.img"
+image="resolute-desktop-gnome-cloudimg-amd64-vX.Y.Z.img"
 cat "$image".part-* > "$image"
 sha256sum --check "$image.sha256"
 ```
+
+## Remote desktop (RDP)
+Remote access is provided by GNOME Remote Desktop (GRD) running as the system
+daemon, which serves RDP on port 3389 and lets users log in remotely with their
+own system account. On first boot a self-signed TLS certificate is generated in
+`/etc/gnome-remote-desktop/`, so every VM created from this image gets its own
+key material. Remote login requires a password for the account, so set one with
+cloud-init (see `chpasswd` below).
 
 ## Compatibility
 The image can be used with QEMU and VirtualBox.
@@ -54,7 +63,13 @@ users:
       - ssh-ed25519 REPLACE_WITH_YOUR_KEY
 chpasswd:
   expire: false
+  users:
+    - name: ubuntu
+      password: REPLACE_WITH_YOUR_PASSWORD
+      type: text
 ```
+
+The password is required to log in over RDP.
 
 Example `meta-data`:
 ```yaml
@@ -66,10 +81,10 @@ QEMU example:
 ```sh
 qemu-system-x86_64 \
   -m 4096 -smp 2 \
-  -drive file=resolute-desktop-xfce-cloudimg-amd64.img,format=qcow2,if=virtio \
+  -drive file=resolute-desktop-gnome-cloudimg-amd64.img,format=qcow2,if=virtio \
   -drive file=seed.iso,format=raw,media=cdrom
 ```
 
 VirtualBox:
-Attach `resolute-desktop-xfce-cloudimg-amd64.img` as the primary disk and
+Attach `resolute-desktop-gnome-cloudimg-amd64.img` as the primary disk and
 `seed.iso` as an optical drive, then boot the VM.

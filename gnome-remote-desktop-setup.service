@@ -1,0 +1,13 @@
+[Unit]
+Description=Configure GNOME Remote Desktop for headless RDP
+ConditionPathExists=/usr/bin/grdctl
+Wants=gnome-remote-desktop.service
+Before=gnome-remote-desktop.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/gnome-remote-desktop-setup
+
+[Install]
+WantedBy=multi-user.target
