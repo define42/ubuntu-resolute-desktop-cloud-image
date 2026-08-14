@@ -40,11 +40,7 @@ run-command chmod 0644 /etc/default/grub.d/99-disable-apparmor.cfg
 # Enable snapd and install apps via snap on first boot
 # (snapd cannot run inside virt-customize, so the installs run at first boot)
 run-command systemctl enable snapd.service snapd.socket snapd.seeded.service
-firstboot-command snap wait system seed.loaded
-firstboot-command snap install intellij-idea-community --classic
-firstboot-command snap install firefox
-firstboot-command snap install chromium
-firstboot-command snap install code --classic
+firstboot-command snap wait system seed.loaded && snap install intellij-idea-community --classic && snap install firefox && snap install chromium && snap install code --classic
 
 # Install Docker from the Ubuntu repository
 run-command DEBIAN_FRONTEND=noninteractive apt-get install -y docker.io docker-buildx docker-compose-v2
