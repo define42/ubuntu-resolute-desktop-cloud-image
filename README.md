@@ -8,6 +8,7 @@ cloud image using GitHub Actions.
 - Expands the disk to 8G
 - Installs XFCE and tools (`xrdp`, `vim`, `net-tools`, `nmap`, `snapd`)
 - Installs Docker (`docker.io` from the Ubuntu repository) with Buildx and Docker Compose
+- Installs the newest Go (`golang-go` from the longsleep/golang-backports deb repository)
 - Installs GRUB and updates the boot config
 - Compresses the result to `resolute-desktop-xfce-cloudimg-amd64.img`
 - Tags and publishes a GitHub Release on pushes to `main`
