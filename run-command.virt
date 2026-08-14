@@ -58,7 +58,7 @@ run-command apt-get update
 install google-chrome-stable
 
 # Add Go (longsleep/golang-backports) deb repository and install newest golang
-run-command wget -qO- 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x52b59b1571a79dbc054901c0f6bc817356a3d45e' | gpg --dearmor -o /etc/apt/keyrings/golang-backports.gpg
+run-command wget -qO- 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x876b22ba887ca91614b5323fc631127f87fa12d1' | gpg --dearmor -o /etc/apt/keyrings/golang-backports.gpg
 run-command printf 'deb [signed-by=/etc/apt/keyrings/golang-backports.gpg] https://ppa.launchpadcontent.net/longsleep/golang-backports/ubuntu resolute main\n' > /etc/apt/sources.list.d/golang-backports.list
 run-command apt-get update
 install golang-go
