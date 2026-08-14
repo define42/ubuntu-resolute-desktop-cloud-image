@@ -91,8 +91,8 @@ run-command systemctl enable xrdp
 # Prefer LightDM/XFCE for local UI
 run-command systemctl set-default graphical.target
 
-# Disable AppArmor service immediately (kernel param applies after reboot)
-run-command systemctl disable apparmor
+# Remove AppArmor entirely (kernel param disables the LSM after reboot)
+run-command DEBIAN_FRONTEND=noninteractive apt-get purge -y apparmor
 
 # Update GRUB and reboot to apply kernel params
 run-command update-grub
