@@ -58,7 +58,6 @@ run-command apt-get update
 install google-chrome-stable
 
 # Install Docker from the Ubuntu repository
-run-command apt-get update
 run-command DEBIAN_FRONTEND=noninteractive apt-get install -y docker.io docker-buildx docker-compose-v2
 
 # Make rootful Docker available to every current and future user.
