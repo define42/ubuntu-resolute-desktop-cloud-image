@@ -57,15 +57,8 @@ run-command printf 'deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gp
 run-command apt-get update
 install google-chrome-stable
 
-# Add Docker's official APT repository and install Docker Engine
-run-command apt-get update
-run-command DEBIAN_FRONTEND=noninteractive apt-get install -y ca-certificates curl
-run-command install -m 0755 -d /etc/apt/keyrings
-run-command curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-run-command chmod a+r /etc/apt/keyrings/docker.asc
-run-command . /etc/os-release && printf 'Types: deb\nURIs: https://download.docker.com/linux/ubuntu\nSuites: %s\nComponents: stable\nArchitectures: %s\nSigned-By: /etc/apt/keyrings/docker.asc\n' "${UBUNTU_CODENAME:-$VERSION_CODENAME}" "$(dpkg --print-architecture)" > /etc/apt/sources.list.d/docker.sources
-run-command apt-get update
-run-command DEBIAN_FRONTEND=noninteractive apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+# Install Docker from the Ubuntu repository
+run-command DEBIAN_FRONTEND=noninteractive apt-get install -y docker.io docker-buildx docker-compose-v2
 
 # Make rootful Docker available to every current and future user.
 # Docker access is equivalent to root access, so every image user must be trusted.
