@@ -7,6 +7,8 @@ cloud image using GitHub Actions.
 - Downloads `resolute-server-cloudimg-amd64.img`
 - Expands the disk to 8G
 - Installs XFCE and tools (`xrdp`, `vim`, `net-tools`, `nmap`, `snapd`)
+- Installs snaps on first boot: `firefox`, `chromium`, `code` (classic), and
+  `intellij-idea-community` (classic)
 - Installs Docker (`docker.io` from the Ubuntu repository) with Buildx and Docker Compose
 - Installs GRUB and updates the boot config
 - Compresses the result to `resolute-desktop-xfce-cloudimg-amd64.img`

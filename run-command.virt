@@ -1,5 +1,5 @@
 run-command apt-get full-upgrade -y
-install xfce4,xfce4-goodies,xfce4-terminal,lightdm,lightdm-gtk-greeter,xauth,xserver-xorg-input-libinput,xserver-xorg-legacy,xrdp,xorgxrdp,dbus-x11,grub-pc-bin,vim,net-tools,nmap,wget,gnupg
+install xfce4,xfce4-goodies,xfce4-terminal,lightdm,lightdm-gtk-greeter,xauth,xserver-xorg-input-libinput,xserver-xorg-legacy,xrdp,xorgxrdp,dbus-x11,grub-pc-bin,vim,net-tools,nmap,wget,gnupg,snapd
 
 run-command ln -sf /dev/null /etc/systemd/system/systemd-networkd-wait-online.service
 
@@ -37,25 +37,14 @@ run-command chmod 0644 /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml
 upload 99-disable-apparmor.cfg:/etc/default/grub.d/99-disable-apparmor.cfg
 run-command chmod 0644 /etc/default/grub.d/99-disable-apparmor.cfg
 
-# Add Mozilla APT repository and pin it above Ubuntu archive
-run-command install -d -m 0755 /etc/apt/keyrings
-run-command wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O /etc/apt/keyrings/packages.mozilla.org.asc
-run-command printf 'deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main\n' > /etc/apt/sources.list.d/mozilla.list
-run-command printf 'Package: *\nPin: origin packages.mozilla.org\nPin-Priority: 1000\n' > /etc/apt/preferences.d/mozilla
-run-command apt-get update
-install firefox
-
-# Add VS Code repository and install code
-run-command wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /etc/apt/keyrings/packages.microsoft.gpg
-run-command printf 'deb [arch=amd64 signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main\n' > /etc/apt/sources.list.d/vscode.list
-run-command apt-get update
-install code
-
-# Add Google Chrome repository and install chrome
-run-command wget -qO- https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /etc/apt/keyrings/google-chrome.gpg
-run-command printf 'deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] https://dl.google.com/linux/chrome/deb/ stable main\n' > /etc/apt/sources.list.d/google-chrome.list
-run-command apt-get update
-install google-chrome-stable
+# Enable snapd and install apps via snap on first boot
+# (snapd cannot run inside virt-customize, so the installs run at first boot)
+run-command systemctl enable snapd.service snapd.socket snapd.seeded.service
+firstboot-command snap wait system seed.loaded
+firstboot-command snap install intellij-idea-community --classic
+firstboot-command snap install firefox
+firstboot-command snap install chromium
+firstboot-command snap install code --classic
 
 # Install Docker from the Ubuntu repository
 run-command DEBIAN_FRONTEND=noninteractive apt-get install -y docker.io docker-buildx docker-compose-v2
