@@ -51,6 +51,18 @@ run-command printf 'deb [arch=amd64 signed-by=/etc/apt/keyrings/packages.microso
 run-command apt-get update
 install code
 
+# Install IntelliJ IDEA with its bundled runtime and a menu entry for all users
+run-command wget --tries=3 --timeout=60 -q https://download.jetbrains.com/idea/idea-2026.2.3.tar.gz -O /tmp/idea-2026.2.3.tar.gz
+run-command printf '%s\n' '68751c8ae4d49407251cd197df795fbed91b6fdc85d10c73c4649a99e496ab37  /tmp/idea-2026.2.3.tar.gz' | sha256sum --check
+run-command install -d -m 0755 /opt/intellij-idea
+run-command tar -xzf /tmp/idea-2026.2.3.tar.gz --strip-components=1 --no-same-owner -C /opt/intellij-idea
+run-command rm /tmp/idea-2026.2.3.tar.gz
+run-command test -x /opt/intellij-idea/bin/idea && test -x /opt/intellij-idea/jbr/bin/java && test -r /opt/intellij-idea/bin/idea.svg
+run-command ln -s /opt/intellij-idea/bin/idea /usr/local/bin/idea
+upload jetbrains-idea.desktop:/usr/share/applications/jetbrains-idea.desktop
+run-command chown root:root /usr/share/applications/jetbrains-idea.desktop
+run-command chmod 0644 /usr/share/applications/jetbrains-idea.desktop
+
 # Add Google Chrome repository and install chrome
 run-command wget -qO- https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /etc/apt/keyrings/google-chrome.gpg
 run-command printf 'deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] https://dl.google.com/linux/chrome/deb/ stable main\n' > /etc/apt/sources.list.d/google-chrome.list

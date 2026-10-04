@@ -5,8 +5,9 @@ cloud image using GitHub Actions.
 
 ## What it does
 - Downloads `resolute-server-cloudimg-amd64.img`
-- Expands the disk to 8G
+- Expands the disk to 16G to leave room for the desktop and development tools
 - Installs XFCE and tools (`xrdp`, `vim`, `net-tools`, `nmap`, `snapd`)
+- Installs IntelliJ IDEA 2026.2.3 with its bundled Java runtime and an application menu icon for all users
 - Installs Docker (`docker.io` from the Ubuntu repository) with Buildx and Docker Compose
 - Installs the newest Go (`golang-go` from the longsleep/golang-backports deb repository)
 - Installs GRUB and updates the boot config
@@ -26,6 +27,13 @@ sha256sum --check "$image.sha256"
 
 ## Compatibility
 The image can be used with QEMU and VirtualBox.
+
+## IntelliJ IDEA
+IntelliJ IDEA is installed in `/opt/intellij-idea` from JetBrains' Linux x86_64
+archive, verified against its pinned SHA-256 checksum. Launch it from the XFCE
+application menu in the **Development/Programming** category, or run `idea` in
+a terminal. Settings and projects belong to each user; the installation is
+shared by all users.
 
 ## Cloud-init
 Cloud-init is used to configure the VM on first boot (users, SSH keys,
