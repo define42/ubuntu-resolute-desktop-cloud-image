@@ -1,6 +1,11 @@
 run-command apt-get full-upgrade -y
 install xfce4,xfce4-goodies,xfce4-terminal,lightdm,lightdm-gtk-greeter,xauth,xserver-xorg-input-libinput,xserver-xorg-legacy,xrdp,xorgxrdp,dbus-x11,grub-pc-bin,vim,net-tools,nmap,wget,gnupg,auditd
 
+# PipeWire desktop audio and XRDP playback/microphone redirection.
+# The XRDP module loads through its packaged XDG autostart entry in XFCE.
+# pulseaudio-utils supplies pactl so the module can select the XRDP devices.
+install pipewire-audio,pipewire-module-xrdp,pulseaudio-utils
+
 run-command ln -sf /dev/null /etc/systemd/system/systemd-networkd-wait-online.service
 
 

@@ -7,6 +7,7 @@ cloud image using GitHub Actions.
 - Downloads `resolute-server-cloudimg-amd64.img`
 - Expands the disk to 16G to leave room for the desktop and development tools
 - Installs XFCE and tools (`xrdp`, `vim`, `net-tools`, `nmap`, `snapd`)
+- Installs PipeWire and the XRDP audio module for remote playback and microphone redirection
 - Installs IntelliJ IDEA 2026.2.3 with its bundled Java runtime and an application menu icon for all users
 - Installs Docker (`docker.io` from the Ubuntu repository) with Buildx and Docker Compose
 - Installs the newest Go (`golang-go` from the longsleep/golang-backports deb repository)
@@ -27,6 +28,23 @@ sha256sum --check "$image.sha256"
 
 ## Compatibility
 The image can be used with QEMU and VirtualBox.
+
+## RDP audio
+The image includes `pipewire-audio`, `pipewire-module-xrdp`, and
+`pulseaudio-utils`. The XRDP module loads automatically when an XFCE RDP
+session starts and selects the `xrdp-sink` output and `xrdp-source` input.
+
+Enable audio playback on your local computer in your RDP client. For microphone
+forwarding, also enable audio recording/input redirection. In Windows Remote
+Desktop Connection, these options are under **Local Resources → Remote audio →
+Settings**: select **Play on this computer** and, if needed, **Record from this
+computer**. Other clients need equivalent settings and audio redirection support.
+
+After changing client settings, log out of XFCE and start a new RDP session.
+Inside that session, use `pactl info` and `pactl list short sinks` to check the
+audio server and the `xrdp-sink` output; `pactl list short sources` lists inputs.
+These packages are included in newly built images; existing VMs need the same
+packages installed separately.
 
 ## IntelliJ IDEA
 IntelliJ IDEA is installed in `/opt/intellij-idea` from JetBrains' Linux x86_64
